@@ -1,5 +1,6 @@
-package com.xpadro.springneo4j;
+package com.xpadro.springneo4j.entity;
 
+import com.xpadro.springneo4j.relationship.InterestRelationship;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;

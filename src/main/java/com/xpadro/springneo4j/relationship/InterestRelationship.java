@@ -1,5 +1,7 @@
-package com.xpadro.springneo4j;
+package com.xpadro.springneo4j.relationship;
 
+import com.xpadro.springneo4j.entity.Topic;
+import com.xpadro.springneo4j.entity.User;
 import org.neo4j.ogm.annotation.*;
 
 @RelationshipEntity(type = "INTERESTED")

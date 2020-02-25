@@ -1,4 +1,4 @@
-package com.xpadro.springneo4j;
+package com.xpadro.springneo4j.entity;
 
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;

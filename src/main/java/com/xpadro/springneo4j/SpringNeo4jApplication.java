@@ -1,5 +1,8 @@
 package com.xpadro.springneo4j;
 
+import com.xpadro.springneo4j.entity.Article;
+import com.xpadro.springneo4j.entity.Topic;
+import com.xpadro.springneo4j.entity.User;
 import com.xpadro.springneo4j.repository.ArticleRepository;
 import com.xpadro.springneo4j.repository.TopicRepository;
 import com.xpadro.springneo4j.repository.UserRepository;
