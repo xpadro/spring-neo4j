@@ -1,9 +1,11 @@
 package com.xpadro.springneo4j;
 
 import com.xpadro.springneo4j.entity.Article;
+import com.xpadro.springneo4j.entity.Publisher;
 import com.xpadro.springneo4j.entity.Topic;
 import com.xpadro.springneo4j.entity.User;
 import com.xpadro.springneo4j.repository.ArticleRepository;
+import com.xpadro.springneo4j.repository.PublisherRepository;
 import com.xpadro.springneo4j.repository.TopicRepository;
 import com.xpadro.springneo4j.repository.UserRepository;
 import org.slf4j.Logger;
@@ -17,6 +19,8 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.String.format;
+
 @SpringBootApplication
 @EnableNeo4jRepositories
 public class SpringNeo4jApplication {
@@ -27,56 +31,68 @@ public class SpringNeo4jApplication {
 	}
 
 	@Bean
-	CommandLineRunner demo(UserRepository userRepository, TopicRepository topicRepository, ArticleRepository articleRepository) {
+	CommandLineRunner demo(UserRepository userRepository,
+						   TopicRepository topicRepository,
+						   ArticleRepository articleRepository,
+						   PublisherRepository publisherRepository) {
+
 		return args -> {
 			userRepository.deleteAll();
 			articleRepository.deleteAll();
 			topicRepository.deleteAll();
+			publisherRepository.deleteAll();
 
 			Topic politics = new Topic("politics");
+			topicRepository.save(politics);
 			Topic economy = new Topic("economics");
+			topicRepository.save(economy);
 			Topic sports = new Topic("sports");
+			topicRepository.save(sports);
 
-			Article article1 = new Article("url1");
-			article1.belongs(politics);
+			Publisher publisher1 = new Publisher("publisher1");
+			Publisher publisher2 = new Publisher("publisher2");
+			Publisher publisher3 = new Publisher("publisher3");
+			Publisher publisher4 = new Publisher("publisher4");
 
-			Article article2 = new Article("url2");
-			article2.belongs(economy);
+			Article article1 = publishArticle(publisher1, "url1", politics, publisherRepository);
+			Article article2 = publishArticle(publisher1, "url2", economy, publisherRepository);
+			Article article3 = publishArticle(publisher1, "url3", politics, publisherRepository);
 
-			Article article3 = new Article("url3");
-			article3.belongs(politics);
+			Article article4 = publishArticle(publisher2, "url4", politics, publisherRepository);
+			Article article5 = publishArticle(publisher2, "url5", economy, publisherRepository);
 
-			Article article4 = new Article("url4");
-			article4.belongs(politics);
+			publishArticle(publisher3, "url6", sports, publisherRepository);
 
-			Article article5 = new Article("url5");
-			article5.belongs(economy);
-			articleRepository.save(article5);
-
-			Article article6 = new Article("url6");
-			article6.belongs(sports);
-			articleRepository.save(article6);
-
-			Article article7 = new Article("url7");
-			article7.belongs(economy);
-
-
+			Article article7 = publishArticle(publisher4, "url7", economy, publisherRepository);
+			
 			User user1 = new User("user1");
-			user1.reads(article1);
-			user1.reads(article2);
-			user1.reads(article5);
-			userRepository.save(user1);
+			readArticles(user1, userRepository, article1, article2, article5);
 
 			User user2 = new User("user2");
-			user2.reads(article3);
-			user2.reads(article4);
-			user2.reads(article7);
-			userRepository.save(user2);
+			readArticles(user2, userRepository, article3, article4, article7);
 
+			logger.info("Listing topics...");
+			topicRepository.findAll().forEach(t -> logger.info(format("\t%s", t.toString())));
 
 			logger.info("Listing users...");
 			List<User> users = Arrays.asList(user1, user2);
-			users.forEach(u -> logger.info("\t" + userRepository.findByName(u.getName()).toString()));
+			users.forEach(u -> logger.info(format("\t%s", userRepository.findByName(u.getName()).toString())));
 		};
+	}
+
+	private Article publishArticle(Publisher publisher, String url, Topic topic, PublisherRepository publisherRepository) {
+		Article article = new Article(url);
+		article.belongs(topic);
+		publisher.publishes(article);
+
+		publisherRepository.save(publisher);
+
+		return article;
+	}
+
+	private void readArticles(User user, UserRepository userRepository, Article... articles) {
+		Arrays.stream(articles).forEach(user::reads);
+
+		userRepository.save(user);
 	}
 }
