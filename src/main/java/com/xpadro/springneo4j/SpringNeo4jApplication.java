@@ -64,7 +64,8 @@ public class SpringNeo4jApplication {
 			publishArticle(publisher3, "url6", sports, publisherRepository);
 
 			Article article7 = publishArticle(publisher4, "url7", economy, publisherRepository);
-			
+			publishArticle(publisher4, "url8", economy, publisherRepository);
+
 			User user1 = new User("user1");
 			readArticles(user1, userRepository, article1, article2, article5);
 
@@ -77,6 +78,14 @@ public class SpringNeo4jApplication {
 			logger.info("Listing users...");
 			List<User> users = Arrays.asList(user1, user2);
 			users.forEach(u -> logger.info(format("\t%s", userRepository.findByName(u.getName()).toString())));
+
+			List<String> relatedArticleUrls = articleRepository.findRelatedArticleUrls("user1", "url2");
+			logger.info("Recommended article urls for user 'user1' reading article 'url2'...");
+			relatedArticleUrls.forEach(r -> logger.info(format("\t%s", r)));
+
+			List<Article> relatedArticles = articleRepository.findRelatedArticles("user1", "url2");
+			logger.info("Recommended articles for user 'user1' reading article 'url2'...");
+			relatedArticles.forEach(r -> logger.info(format("\t%s", r.toString())));
 		};
 	}
 
